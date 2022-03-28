@@ -1,0 +1,149 @@
+# Create a wordle game
+
+import random
+import turtle
+
+
+
+f = open(r'C:/Users/Farhan/Desktop/Programming/python/Wordle Answers.txt')
+answer_list = f.read()
+answer_list = answer_list.split(',')
+answer = random.choice(answer_list).upper()
+
+file = open(r'C:/Users/Farhan/Desktop/Programming/python/Wordle Dictionary.txt')
+word_list = file.read()
+word_list = word_list.split(',')
+
+wn = turtle.Screen()
+wn.bgcolor("black")
+wn.setup(600, 500)
+wn.title("Wordle")
+
+pen = turtle.Turtle()
+pen.speed(0)
+pen.hideturtle()
+
+
+# Game intro for player
+def intro():
+    print('Welcome to')
+
+    #colours = ('dim gray','medium sea green','dim gray','gold','gold')
+
+    pen.color('dim gray')
+    pen.begin_fill()
+    render(-115 + 1 * 50, 50, pen)
+    pen.end_fill()
+    pen.color('medium sea green')
+    pen.begin_fill()
+    render(-115 + 2 * 50, 50, pen)
+    pen.end_fill()
+    pen.color('dim gray')
+    pen.begin_fill()
+    render(-115 + 3 * 50, 50, pen)
+    pen.end_fill()
+    pen.color('gold')
+    pen.begin_fill()
+    render(-115 + 4 * 50, 50, pen)
+    pen.end_fill()
+    pen.color('gold')
+    pen.begin_fill()
+    render(-115 + 5 * 50, 50, pen)
+    pen.end_fill()
+
+
+def user_input():
+    guess_count = 0
+    guess = ''
+    guesses = []
+
+    while guess not in answer_list and word_list:
+
+        guess = turtle.textinput("Guess", "Please enter a 5-letter word.")
+    
+    if guess in answer_list and word_list:
+        guesses.append(guess)
+        guess_count += 1
+
+# Draw letter border
+def render(x, y, pen):
+    pen.color('silver')
+    pen.width(2)
+    pen.penup()
+    pen.goto(x-20, y+20)
+    pen.pendown()
+    pen.goto(x-20, y-20)
+    pen.goto(x+20, y-20)
+    pen.goto(x+20, y+20)
+    pen.goto(x-20, y+20)
+    pen.penup()
+
+def fill(x, y,col):
+    pen.fillcolor(col)
+    pen.begin_fill()
+    render(x, y)
+    pen.end_fill()
+
+
+game_on = True
+
+# Displayed_word shows whether a letter is in the word or at the right position
+displayed_word = ""
+
+letters = []
+letters_copy = []
+
+# Answer word split into letters
+while game_on:
+    for i in range(5):
+        answer_list.append(answer[i])
+
+# Takes player input and checks if a letters is in the word or at the right position
+win_check = False
+for _ in range(6):
+    #letters = word
+
+    while win_check == False:
+        guess = input("Enter a five letter word: ")
+        if guess not in word_list and guess not in answer_list:
+            print("Word doesn't exist")
+        letters_copy = letters[:]
+        for i in range(5):
+            if guess[i] == answer[i]:
+                displayed_word += f'"{letters[i]}"'
+            elif guess[i] in letters_copy:
+                b = False
+                d = False
+                for a in range(5):
+                    if letters[a] == guess[a] == guess[i] and not b:
+                        for e in range(5):
+                            if guess[i] == letters[e] and e != a and not b:
+                                displayed_word += f"'{guess[i]}'"
+                                d = True
+                        if not d:
+                            displayed_word += f"{guess[i]}"
+                            b = True
+                        if not b:
+                            displayed_word += f"'{guess[i]}'"
+                            letters_copy.remove(guess[i])
+            else:
+                displayed_word += f"{guess[i]}"
+        print(displayed_word)
+        if guess == answer:
+            print("YOU WIN!")
+            win_check = True
+if win_check == False:
+    print(f"You lost! The word was {answer}")
+
+play_again = True
+while play_again:
+    play = input("Do you want to play again? (Y/N)")
+    if play == "Y":
+        print("Reinitializing game...")
+    elif play == "N":
+        print("Thank you for playing.")
+    else:
+        print("Invalid Option")
+
+
+wn.mainloop()
